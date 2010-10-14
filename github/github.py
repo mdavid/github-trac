@@ -1,6 +1,6 @@
 from trac.core import *
 from trac.config import Option, IntOption, ListOption, BoolOption
-from trac.web.api import IRequestFilter, IRequestHandler, Href
+from trac.web.api import IRequestFilter, IRequestHandler, Href, RequestDone
 from trac.util.translation import _
 from hook import CommitHook
 
@@ -42,7 +42,8 @@ class GithubPlugin(Component):
         if self.processHook:
             self.processCommitHook(req)
         
-        req.send_response()
+        req.send_response(204)
+        req.send_header('Content-Length', 0)
         req.write('')
         raise RequestDone
 
@@ -121,9 +122,12 @@ class GithubPlugin(Component):
             try:
               self.env.log.debug("Fetching repo %s" % self.repo)
               repo.execute(['git', 'fetch'])
-              self.env.log.debug("Resyncing local repo")
-              self.env.get_repository('').sync()
+              try:
+                self.env.log.debug("Resyncing local repo")
+                self.env.get_repository('').sync()
+              except:
+                self.env.log.error("git sync failed!")
             except:
-              self.env.log.debug("git fetch failed!")
+              self.env.log.error("git fetch failed!")
 
 
