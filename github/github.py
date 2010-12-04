@@ -107,15 +107,6 @@ class GithubPlugin(Component):
         if not status:
             status = 'closed'
 
-        data = req.args.get('payload')
-         
-        if data:
-            jsondata = simplejson.loads(data)
-
-            for i in jsondata['commits']:
-                self.hook.process(i, status)
-
-
         if self.autofetch:
             repo = Git(self.repo)
 
@@ -130,4 +121,10 @@ class GithubPlugin(Component):
             except:
               self.env.log.error("git fetch failed!")
 
+        data = req.args.get('payload')
+         
+        if data:
+            jsondata = simplejson.loads(data)
 
+            for i in jsondata['commits']:
+                self.hook.process(i, status)
