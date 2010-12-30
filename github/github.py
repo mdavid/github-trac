@@ -126,5 +126,6 @@ class GithubPlugin(Component):
         if data:
             jsondata = simplejson.loads(data)
 
-            for i in jsondata['commits']:
-                self.hook.process(i, status)
+            if jsondata['ref'] == "refs/heads/master":
+                for i in jsondata['commits']:
+                    self.hook.process(i, status)
