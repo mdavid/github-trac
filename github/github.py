@@ -4,6 +4,7 @@ from trac.web.api import IRequestFilter, IRequestHandler, Href, RequestDone
 from trac.util.translation import _
 from hook import CommitHook
 
+import re
 import simplejson
 
 from git import Git
@@ -126,6 +127,6 @@ class GithubPlugin(Component):
         if data:
             jsondata = simplejson.loads(data)
 
-            if jsondata['ref'] == "refs/heads/master":
+            if jsondata['ref'] == "refs/heads/master" or re.search('-stable$', jsondata['ref']):
                 for i in jsondata['commits']:
                     self.hook.process(i, status)
