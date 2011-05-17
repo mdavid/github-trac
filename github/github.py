@@ -4,6 +4,7 @@ from trac.web.api import IRequestFilter, IRequestHandler, Href, RequestDone
 from trac.util.translation import _
 from hook import CommitHook
 
+import sys
 import re
 import simplejson
 
@@ -120,7 +121,7 @@ class GithubPlugin(Component):
               except:
                 self.env.log.error("git sync failed!")
             except:
-              self.env.log.error("git fetch failed!")
+              self.env.log.error("git fetch failed with: %s" % sys.exc_info()[1])
 
         data = req.args.get('payload')
          
